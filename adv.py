@@ -31,7 +31,20 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 
+q = Queue()
+q.enqueue((traversal_path, player.current_room))
+visited = set()
 
+while q.size() > 0:
+    (traversal_path, current_room) = q.dequeue()
+    if len(traversal_path) == len(world.rooms):
+        break
+    else:
+        for exit in current_room.get_exits():
+            visited.add(current_room.id)
+            next_room = getattr(current_room, f'{exit}_to')
+            if next_room.id not in visited:
+                q.enqueue(([*traversal_path, exit], next_room))
 
 # TRAVERSAL TEST
 visited_rooms = set()
