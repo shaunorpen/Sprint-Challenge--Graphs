@@ -29,13 +29,15 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-route = []
+traversal_path = list()
 
 q = Queue()
-q.enqueue((route, player.current_room))
-visited = set()
+route = list()
 routes = list()
+visited = set()
 substitutes = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
+
+q.enqueue((route, player.current_room))
 
 while q.size() > 0:
     (route, current_room) = q.dequeue()
@@ -49,8 +51,6 @@ while q.size() > 0:
             next_room = getattr(current_room, f'{exit}_to')
             if next_room.id not in visited:
                 q.enqueue(([*route, exit], next_room))
-
-traversal_path = []
 
 for i in range(len(routes)):
     if i < len(routes) - 1:
