@@ -15,8 +15,8 @@ world = World()
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
-# map_file = "maps/test_loop_fork.txt"
-map_file = "maps/main_maze.txt"
+map_file = "maps/test_loop_fork.txt"
+# map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -35,6 +35,7 @@ q = Queue()
 q.enqueue((route, player.current_room))
 visited = set()
 routes = list()
+substitutes = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
 
 while q.size() > 0:
     (route, current_room) = q.dequeue()
@@ -49,10 +50,7 @@ while q.size() > 0:
             if next_room.id not in visited:
                 q.enqueue(([*route, exit], next_room))
 
-routes.sort(key=len)
-
 traversal_path = []
-substitutes = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
 
 for i in range(len(routes)):
     if i < len(routes) - 1:
