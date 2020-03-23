@@ -55,54 +55,53 @@ def build_graph(player):
 
 graph = build_graph(player)
 
+def explore(graph, player, explored):
+    path = list()
+
+    unexplored_exits = [exit for exit in graph[player.current_room.id] if graph[player.current_room.id][exit] not in explored]
+    
+    while len(unexplored_exits) > 0:
+        explored.add(player.current_room.id)
+        direction = random.choice(unexplored_exits)
+        path.append(direction)
+        player.travel(direction)
+        unexplored_exits = [exit for exit in graph[player.current_room.id] if graph[player.current_room.id][exit] not in explored]
+
+    explored.add(player.current_room.id)
+
+    return path
+
+def path_to_nearest_unexplored(graph, player, explored):
+    q = Queue()
+    visited = set()
+    exits = graph[player.current_room.id]
+    for exit in exits:
+        q.enqueue([exit])
+
+    while q.size() > 0:
+        path = q.dequeue()
+        current_room = player.current_room.id
+        for step in path:
+            current_room = graph[current_room][step]
+        visited.add(current_room)
+        if current_room not in explored:
+            for direction in path:
+                player.travel(direction)
+            return path
+        else:
+            exits = graph[current_room]
+            for exit in exits:
+                if graph[current_room][exit] not in visited:
+                    q.enqueue([*path, exit])
+    
+    return list()
+
 def generate_possible_path(graph, player):
     explored = set()
 
-    def explore(graph, player):
-        path = list()
-
-        unexplored_exits = [exit for exit in graph[player.current_room.id] if graph[player.current_room.id][exit] not in explored]
-        
-        while len(unexplored_exits) > 0:
-            explored.add(player.current_room.id)
-            direction = random.choice(unexplored_exits)
-            path.append(direction)
-            player.travel(direction)
-            unexplored_exits = [exit for exit in graph[player.current_room.id] if graph[player.current_room.id][exit] not in explored]
-
-        explored.add(player.current_room.id)
-
-        return path
-
-    def path_to_nearest_unexplored(graph, player):
-        q = Queue()
-        visited = set()
-        exits = graph[player.current_room.id]
-        for exit in exits:
-            q.enqueue([exit])
-
-        while q.size() > 0:
-            path = q.dequeue()
-            current_room = player.current_room.id
-            for step in path:
-                current_room = graph[current_room][step]
-            visited.add(current_room)
-            if current_room not in explored:
-                for direction in path:
-                    player.travel(direction)
-                return path
-            else:
-                exits = graph[current_room]
-                for exit in exits:
-                    if graph[current_room][exit] not in visited:
-                        q.enqueue([*path, exit])
-        
-        return list()
-
-
     while len(explored) < len(graph):
-        traversal_path.extend(explore(graph, player))
-        traversal_path.extend(path_to_nearest_unexplored(graph, player))
+        traversal_path.extend(explore(graph, player, explored))
+        traversal_path.extend(path_to_nearest_unexplored(graph, player, explored))
 
 generate_possible_path(graph, player)
 
